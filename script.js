@@ -110,14 +110,17 @@ const answerButtons = document.getElementById("answer-buttons");
 const nextBtn = document.getElementById("next-btn");
 const timeDisplay = document.getElementById("time");
 const greeting = document.getElementById("greeting");
+const time = document.getElementById("time");
 
 let currentQuestionIndex = 0;
 let score = 0;
 let timer;
-let timeLeft;
+let timeLeft = 25;
 
+let name;
 startBtn.addEventListener("click", () => {
-  const name = usernameInput.value.trim();
+  name = usernameInput.value.trim();
+
   if (name === "") {
     alert("Please enter your name.");
     return;
@@ -132,11 +135,14 @@ function startQuiz() {
   currentQuestionIndex = 0;
   score = 0;
   showQuestion();
+  timeDisplay.innerText = `Time: ${timeLeft} secs`;
+  startTimer();
+  showQuestion();
 }
 
 function showQuestion() {
   resetState();
-  startTimer();
+  // startTimer();
   let currentQuestion = questions[currentQuestionIndex];
   questionEl.innerText = currentQuestion.question;
 
@@ -150,9 +156,6 @@ function showQuestion() {
 }
 
 function resetState() {
-  clearInterval(timer);
-  timeLeft = 10;
-  timeDisplay.innerText = timeLeft;
   nextBtn.style.display = "none";
   answerButtons.innerHTML = "";
 }
@@ -160,16 +163,16 @@ function resetState() {
 function startTimer() {
   timer = setInterval(() => {
     timeLeft--;
-    timeDisplay.innerText = timeLeft;
+    timeDisplay.innerText = `Time: ${timeLeft} secs`;
     if (timeLeft <= 0) {
       clearInterval(timer);
-      showCorrectAnswer();
+      showScore();
+      // showCorrectAnswer();
     }
   }, 1000);
 }
 
 function selectAnswer(e) {
-  clearInterval(timer);
   const selectedBtn = e.target;
   const isCorrect = selectedBtn.dataset.correct === "true";
 
@@ -203,7 +206,11 @@ nextBtn.addEventListener("click", () => {
 });
 
 function showScore() {
+  timeDisplay.innerText = "Score";
   resetState();
+  if (score < 5) {
+    greeting.innerText = `Weldone ${name}, Try again!`;
+  }
   questionEl.innerText = `You scored ${score} out of ${questions.length}!`;
   nextBtn.innerText = "Play Again";
   nextBtn.style.display = "block";
